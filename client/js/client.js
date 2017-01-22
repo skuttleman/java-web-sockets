@@ -1,12 +1,18 @@
-import socket from './utils/socket';
+import React from 'react';
+import { render } from 'react-dom';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
 
-socket.connect('client')
-    .on('open', () => console.log('connection open'))
-    .on('open', () => {
-        // setTimeout(() => {
-        //     socket.send('broadcast', { message: 'to everyone' })
-        //         .send('broadcast', { to: 'myid', message: 'to myid' });
-        // }, 1000);
-    }).on('message', console.log);
+import rootReducers from './reducers/root';
+import middleware from './utils/middleware';
+import ClientApp from './components/ClientApp';
 
-window.socket = socket;
+const store = createStore(rootReducers, applyMiddleware(...middleware));
+
+document.addEventListener('DOMContentLoaded', () => {
+    render(
+        <Provider store={store}>
+            <ClientApp />
+        </Provider>,
+        document.getElementById('app'));
+});

@@ -8,9 +8,9 @@ import java.util.Map;
 public class MapSocketMessage extends SocketMessage<Map<String, String>> {
     @JsonCreator
     public MapSocketMessage(
-        @JsonProperty("event") String event,
+        @JsonProperty("type") String type,
         @JsonProperty("payload") Map<String, String> payload
     ) {
-        super(event, payload);
+        super(type, payload);
     }
 }

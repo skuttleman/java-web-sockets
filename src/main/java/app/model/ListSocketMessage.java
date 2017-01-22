@@ -8,9 +8,9 @@ import java.util.List;
 public class ListSocketMessage extends SocketMessage<List<String>> {
     @JsonCreator
     public ListSocketMessage(
-        @JsonProperty("event") String event,
+        @JsonProperty("type") String type,
         @JsonProperty("payload") List<String> payload
     ) {
-        super(event, payload);
+        super(type, payload);
     }
 }

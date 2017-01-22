@@ -1,0 +1,15 @@
+.connection {
+    cursor: pointer;
+    &.connection--selected {
+        background-color: lightblue;
+        font-style: italic;
+    }
+}
+
+li {
+    list-style: none;
+}
+
+* {
+    font-family: sans-serif;
+}

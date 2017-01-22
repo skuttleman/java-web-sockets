@@ -1,8 +1,7 @@
 const getProtocol = () => {
-    return window && window.location && window.location.protocol;
+    return window.location.protocol;
 };
 
 export default {
-    getProtocol,
-    WebSocket: window.WebSocket
+    getProtocol
 };

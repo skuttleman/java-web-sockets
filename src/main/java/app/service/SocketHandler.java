@@ -10,6 +10,7 @@ import org.springframework.web.socket.WebSocketSession;
 
 import java.util.Map;
 
+import static app.utils.DataUtils.parseQuery;
 import static app.utils.DataUtils.simpleMap;
 
 @Service
@@ -40,7 +41,11 @@ public class SocketHandler {
 
     public void subscribe(String channelId, WebSocketSession session) {
         socketManager.subscribe(channelId, session);
-        notifyManagerConnect(channelId);
+        if (channelId.equals("manager")) {
+            socketManager.getChannelIds().forEach(this::notifyManagerConnect);
+        } else {
+            notifyManagerConnect(channelId);
+        }
     }
 
     private void handleMessage(StringSocketMessage message, WebSocketSession session) {
@@ -49,10 +54,14 @@ public class SocketHandler {
     private void handleMessage(MapSocketMessage message, WebSocketSession session) {
         Map<String, String> map = message.getPayload();
         Map<String, String> payload = simpleMap("message", map.get("message"));
+        payload.put("from", parseQuery(session.getUri().getQuery()).get("id"));
 
-        switch (message.getEvent()) {
+        switch (message.getType()) {
             case "broadcast":
                 notify(map.get("to"), "broadcast", payload);
+                break;
+            default:
+                handleUnknownMessage(session);
         }
     }
 

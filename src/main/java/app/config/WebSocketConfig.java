@@ -18,6 +18,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public WebSocketConfig(SocketHandler socketHandler) {
         this.socketHandler = socketHandler;
     }
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(myHandler(), "/socket")

@@ -2,8 +2,7 @@ import windowHelper from '../../js/utils/windowHelper';
 
 describe('app', () => {
     beforeEach(() => {
-        windowHelper.WebSocket = function() {};
-        spyOn(windowHelper, 'getProtocol');
+        spyOn(windowHelper, 'getProtocol').and.returnValue('http:')
     });
 
     it('has a test', () => {

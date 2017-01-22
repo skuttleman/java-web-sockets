@@ -51,6 +51,12 @@ public class SocketManager {
         broadcast(channelId, new TextMessage(message));
     }
 
+    public List<String> getChannelIds() {
+        return channels.keySet()
+            .stream()
+            .collect(toList());
+    }
+
     private void broadcast(String channelId, TextMessage message) {
         if (channelId == null) {
             broadcast(message);
