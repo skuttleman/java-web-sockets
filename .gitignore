@@ -1,0 +1,7 @@
+.idea/
+.gradle/
+build/
+classes/
+client/node_modules/
+client/*.log*
+src/main/resources/static/
