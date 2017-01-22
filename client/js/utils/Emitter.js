@@ -1,6 +1,6 @@
 export default class Emitter {
     constructor() {
-        this.clearEventListeners();
+        this.clearListeners();
     }
 
     emit(event, payload) {
@@ -9,12 +9,12 @@ export default class Emitter {
         callbacks.forEach(callback => callback(payload));
     }
 
-    addEventListener(event, listener) {
+    addListener(event, listener) {
         this._listeners[event] = this._listeners[event] || [];
         this._listeners[event].push(listener);
     }
 
-    clearEventListeners() {
+    clearListeners() {
         this._listeners = {};
     }
 }

@@ -5,27 +5,28 @@ export default class SocketHandler {
         this._retryConnect = retry;
     }
 
+    connect(url = this._url) {
+        this._url = url;
+        this.close();
+        this._socket = new WebSocket(url);
+        this._socket.onopen = this._withoutReconnect.bind(this, 'open');
+        this._socket.onclose = this._withReconnect.bind(this, 'close');
+        this._socket.onerror = this._withReconnect.bind(this, 'error');
+        this._socket.onmessage = this._onMessage.bind(this);
+    }
+
     close() {
         if (this._socket) {
             this._socket.onclose = null;
             this._socket.onerror = null;
             try {
                 this._socket.close();
-                this._emitter.emit('close', { message: 'socket close' });
+                this._emitter.emit('close', { message: 'socket closed' });
             } catch (error) {
                 this._emitter.emit('error', error);
             }
         }
-        this._emitter.clearEventListeners();
-    }
-
-    connect(url) {
-        this.close();
-        this._socket = new WebSocket(url);
-        this._socket.onopen = this._onOpen.bind(this);
-        this._socket.onclose = this._onClose.bind(this);
-        this._socket.onerror = this._onError.bind(this);
-        this._socket.onmessage = this._onMessage.bind(this);
+        this._emitter.clearListeners();
     }
 
     send(data) {
@@ -45,18 +46,13 @@ export default class SocketHandler {
         }, this._retryConnect);
     }
 
-    _onOpen(info) {
-        this._emitter.emit('open', info);
-    }
-
-    _onClose(reason) {
-        this._emitter.emit('close', reason);
+    _withReconnect(event, data) {
+        this._withoutReconnect(event, data);
         this._reconnect();
     }
 
-    _onError(error) {
-        this._emitter.emit('error', error);
-        this._reconnect();
+    _withoutReconnect(event, data) {
+        this._emitter.emit(event, data);
     }
 
     _onMessage({ data }) {

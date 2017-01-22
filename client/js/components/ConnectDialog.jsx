@@ -24,7 +24,7 @@ export default class ConnectDialog extends Component {
             <form className="connectDialog" onSubmit={event => this.onConnect(event)}>
                 <label htmlFor="message">ChannelId:</label>
                 <input id="message" value={this.props.channelId} onChange={event => this.onChange(event)}/>
-                <button type="submit">Connect</button>
+                <button type="submit" disabled={!this.props.channelId}>Connect</button>
             </form>
         );
     }
