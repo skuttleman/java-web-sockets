@@ -5,3 +5,5 @@ classes/
 client/node_modules/
 client/*.log*
 src/main/resources/static/
+.DS_Store
+acceptance/Gemfile.lock

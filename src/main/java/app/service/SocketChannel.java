@@ -6,14 +6,14 @@ import org.springframework.web.socket.WebSocketSession;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static app.service.SocketManager.send;
-
 public class SocketChannel {
     private final String channelId;
+    private final SocketSender sender;
     private List<WebSocketSession> sessions;
 
-    public SocketChannel(String channelId) {
+    public SocketChannel(String channelId, SocketSender sender) {
         this.channelId = channelId;
+        this.sender = sender;
         this.sessions = new CopyOnWriteArrayList<>();
     }
 
@@ -27,6 +27,6 @@ public class SocketChannel {
     }
 
     public void broadcast(TextMessage message) {
-        sessions.forEach(session -> send(session, message, channelId));
+        sessions.forEach(session -> sender.send(session, message, channelId));
     }
 }

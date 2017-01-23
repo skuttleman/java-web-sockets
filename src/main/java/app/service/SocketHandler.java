@@ -16,9 +16,11 @@ import static app.utils.DataUtils.simpleMap;
 @Service
 public class SocketHandler {
     private final SocketManager socketManager;
+    private final SocketSender sender;
 
     @Autowired
-    public SocketHandler(SocketManager socketManager) {
+    public SocketHandler(SocketManager socketManager, SocketSender sender) {
+        this.sender = sender;
         this.socketManager = socketManager;
     }
 
@@ -69,7 +71,7 @@ public class SocketHandler {
     }
 
     private void handleUnknownMessage(WebSocketSession session) {
-        SocketManager.send(session, new StringSocketMessage("error", "Unknown Event"));
+        sender.send(session, new StringSocketMessage("error", "Unknown Message Type"));
     }
 
     private void notifyManagerConnect(String channelId) {

@@ -32,6 +32,7 @@ dependencies {
             "org.springframework.boot:spring-boot-devtools",
             "org.springframework.boot:spring-boot-starter-websocket",
             "org.springframework:spring-websocket",
+            "org.mockito:mockito-all:1.9.5",
             "com.fasterxml.jackson.core:jackson-core"
     )
     testCompile("junit:junit")
@@ -41,3 +42,10 @@ bootRun {
     addResources = true
 }
 
+test {
+    onOutput { descriptor, event ->
+        logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
+    }
+}
+
+defaultTasks 'clean', 'assemble', 'test'

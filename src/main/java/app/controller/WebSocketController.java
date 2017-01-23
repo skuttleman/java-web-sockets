@@ -27,7 +27,6 @@ public class WebSocketController extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws IOException {
         String id = parseQuery(session.getUri().getQuery()).get("id");
         logger.info("session established for: " + id);
-        logger.info("cookies: " + parseCookie(session.getHandshakeHeaders().toSingleValueMap().get("cookie")));
 
         socketHandler.subscribe(id, session);
     }
