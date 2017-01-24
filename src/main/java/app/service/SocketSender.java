@@ -38,8 +38,8 @@ public class SocketSender {
             }
             session.sendMessage(message);
             return true;
-        } catch (IOException e) {
-            logger.info("failed to send socket message" + e);
+        } catch (Exception e) {
+            logger.debug("failed to send socket message" + e);
             return false;
         }
     }

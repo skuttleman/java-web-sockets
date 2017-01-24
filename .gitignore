@@ -3,7 +3,7 @@
 build/
 classes/
 client/node_modules/
-client/*.log*
+*.log*
 src/main/resources/static/
 .DS_Store
 acceptance/Gemfile.lock

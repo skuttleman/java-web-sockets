@@ -45,7 +45,7 @@ public class SocketSenderTest {
 
     @Test
     public void send_failsToSendMessage() throws Exception {
-        doThrow(IOException.class).when(session).sendMessage(any());
+        doThrow(Exception.class).when(session).sendMessage(any());
 
         boolean result = sender.send(session, "message", "channel");
 
