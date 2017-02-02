@@ -14,12 +14,12 @@ import static app.utils.DataUtils.parseQuery;
 import static app.utils.DataUtils.simpleMap;
 
 @Service
-public class SocketHandler {
+public class SocketService {
     private final SocketManager socketManager;
     private final SocketSender sender;
 
     @Autowired
-    public SocketHandler(SocketManager socketManager, SocketSender sender) {
+    public SocketService(SocketManager socketManager, SocketSender sender) {
         this.sender = sender;
         this.socketManager = socketManager;
     }

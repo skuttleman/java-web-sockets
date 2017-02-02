@@ -22,19 +22,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SocketHandlerTest {
+public class SocketServiceTest {
     @Mock
     private SocketManager manager;
     @Mock
     private SocketSender sender;
     @Mock
     private WebSocketSession session;
-    private SocketHandler handler;
+    private SocketService service;
     private Map<String, String> payload;
 
     @Before
     public void setup() throws Exception {
-        handler = new SocketHandler(manager, sender);
+        service = new SocketService(manager, sender);
         payload = simpleMap("message", "some-message");
 
         when(session.getUri()).thenReturn(new URI("http", "www.example.com", "/some/path", null, null));
@@ -44,7 +44,7 @@ public class SocketHandlerTest {
     public void handleMessage_handlesBroadcast() throws Exception {
         payload.put("to", "some-channel");
         SocketMessage<?> message = new MapSocketMessage("broadcast", payload);
-        handler.handleMessage(message, session);
+        service.handleMessage(message, session);
         Map<String, String> newPayload = simpleMap("message", "some-message");
         newPayload.put("from", null);
 
@@ -54,7 +54,7 @@ public class SocketHandlerTest {
     @Test
     public void handleMessage_handlesUnknownMessage() throws Exception {
         SocketMessage<?> message = new MapSocketMessage("some-type", payload);
-        handler.handleMessage(message, session);
+        service.handleMessage(message, session);
 
         verify(sender).send(session, new StringSocketMessage("error", "Unknown Message Type"));
     }
@@ -66,7 +66,7 @@ public class SocketHandlerTest {
         Map<String, String> payload1 = simpleMap("id", "id1");
         Map<String, String> payload2 = simpleMap("id", "id2");
 
-        handler.handleDisconnect(session);
+        service.handleDisconnect(session);
 
         verify(manager).clean(session);
         verify(manager).broadcast("manager", new MapSocketMessage("disconnected", payload1));
@@ -80,7 +80,7 @@ public class SocketHandlerTest {
         Map<String, String> payload1 = simpleMap("id", "id1");
         Map<String, String> payload2 = simpleMap("id", "id2");
 
-        handler.subscribe("manager", session);
+        service.subscribe("manager", session);
 
         verify(manager).subscribe("manager", session);
         verify(manager).broadcast("manager", new MapSocketMessage("connected", payload1));
@@ -93,7 +93,7 @@ public class SocketHandlerTest {
         when(manager.getChannelIds()).thenReturn(ids);
         Map<String, String> payload = simpleMap("id", "non-manager");
 
-        handler.subscribe("non-manager", session);
+        service.subscribe("non-manager", session);
 
         verify(manager).subscribe("non-manager", session);
         verify(manager).broadcast("manager", new MapSocketMessage("connected", payload));

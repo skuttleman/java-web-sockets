@@ -13,10 +13,12 @@ class SocketHelper
 
             ws.on :close do
                 @open = false
+                connect id, &block
             end
 
-            ws.on :error do |e|
+            ws.on :error do
                 @open = false
+                connect id, &block
             end
         end
 

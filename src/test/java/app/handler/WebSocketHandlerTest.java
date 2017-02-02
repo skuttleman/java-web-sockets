@@ -1,7 +1,7 @@
-package app.controller;
+package app.handler;
 
+import app.service.SocketService;
 import app.model.StringSocketMessage;
-import app.service.SocketHandler;
 import app.utils.JsonUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,16 +21,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class WebSocketControllerTest {
+public class WebSocketHandlerTest {
     @Mock
     private WebSocketSession session;
     @Mock
-    private SocketHandler handler;
-    private WebSocketController controller;
+    private SocketService service;
+    private WebSocketHandler controller;
 
     @Before
     public void setup() throws Exception {
-        controller = new WebSocketController(handler);
+        controller = new WebSocketHandler(service);
         when(session.getUri()).thenReturn(new URI("http", "www.example.com", "/some/path", "id=1234", null));
         when(session.getHandshakeHeaders()).thenReturn(new HttpHeaders());
     }
@@ -40,14 +40,14 @@ public class WebSocketControllerTest {
         controller.afterConnectionEstablished(session);
 
         verify(session).getUri();
-        verify(handler).subscribe("1234", session);
+        verify(service).subscribe("1234", session);
     }
 
     @Test
     public void afterConnectionClosed() throws Exception {
         controller.afterConnectionClosed(session, null);
 
-        verify(handler).handleDisconnect(session);
+        verify(service).handleDisconnect(session);
     }
 
     @Test
@@ -56,6 +56,6 @@ public class WebSocketControllerTest {
 
         controller.handleTextMessage(session, new TextMessage(json));
 
-        verify(handler).handleMessage(new StringSocketMessage("type", "payload"), session);
+        verify(service).handleMessage(new StringSocketMessage("type", "payload"), session);
     }
 }

@@ -1,26 +1,25 @@
-package app.controller;
+package app.handler;
 
 import app.model.SocketMessage;
-import app.service.SocketHandler;
+import app.service.SocketService;
 import app.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
+import org.springframework.web.socket.handler.TextWebSocketHandler;;
 
 import java.io.IOException;
 
-import static app.utils.DataUtils.parseCookie;
 import static app.utils.DataUtils.parseQuery;
 
-public class WebSocketController extends TextWebSocketHandler {
-    private static final Logger logger = LoggerFactory.getLogger(WebSocketController.class);
-    private final SocketHandler socketHandler;
+public class WebSocketHandler extends TextWebSocketHandler {
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketHandler.class);
+    private final SocketService socketService;
 
-    public WebSocketController(SocketHandler socketHandler) {
-        this.socketHandler = socketHandler;
+    public WebSocketHandler(SocketService socketService) {
+        this.socketService = socketService;
     }
 
     @Override
@@ -28,14 +27,14 @@ public class WebSocketController extends TextWebSocketHandler {
         String id = parseQuery(session.getUri().getQuery()).get("id");
         logger.info("session established for: " + id);
 
-        socketHandler.subscribe(id, session);
+        socketService.subscribe(id, session);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
         logger.info("session closed with status: " + status);
 
-        socketHandler.handleDisconnect(session);
+        socketService.handleDisconnect(session);
     }
 
     @Override
@@ -44,6 +43,6 @@ public class WebSocketController extends TextWebSocketHandler {
 
         logger.info("received socket message: " + message);
 
-        socketHandler.handleMessage(message, session);
+        socketService.handleMessage(message, session);
     }
 }

@@ -7,3 +7,4 @@ client/node_modules/
 src/main/resources/static/
 .DS_Store
 acceptance/Gemfile.lock
+.vscode/
