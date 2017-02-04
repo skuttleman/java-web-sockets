@@ -10,7 +10,7 @@ export default class SocketHandler {
 
     connect(url = this._url) {
         this._url = url;
-        this.close();
+        this.close(true);
         this._socket = socketUtils.connectSocket(url, {
             onMessage: event => this._onMessage(event),
             onOpen: event => this._emit('open', event),
@@ -19,12 +19,15 @@ export default class SocketHandler {
         });
     }
 
-    close() {
+    close(doNotEmit) {
         if (this._socket) {
             this._socket.onclose = null;
             this._socket.onerror = null;
             try {
                 this._socket.close();
+                if (!doNotEmit) {
+                    this._emitter.emit('close', { message: 'socket closed' });
+                }
             } catch (error) {
                 this._emitter.emit('error', error);
             }

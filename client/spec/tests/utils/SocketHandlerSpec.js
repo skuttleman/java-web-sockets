@@ -35,7 +35,7 @@ describe('Socket Handler', () => {
             socketHandler.connect('some url');
 
             expect(socketUtils.connectSocket).toHaveBeenCalledWith('some url', jasmine.any(Object));
-            expect(socketHandler.close).toHaveBeenCalled();
+            expect(socketHandler.close).toHaveBeenCalledWith(true);
         });
 
         it('emits events', () => {
@@ -100,11 +100,21 @@ describe('Socket Handler', () => {
             const socketHandler = instantiate();
 
             socketHandler._socket = fakeConnect('some url', {});
-            socketHandler.close();
+            socketHandler.close(true);
 
             expect(socketHandler._socket.onclose).toEqual(null);
             expect(socketHandler._socket.onerror).toEqual(null);
             expect(socketHandler._socket.close).toHaveBeenCalled();
+            expect(emitter.emit).not.toHaveBeenCalled();
+        });
+
+        it('emits an event', () => {
+            const socketHandler = instantiate();
+
+            socketHandler._socket = fakeConnect('some url', {});
+            socketHandler.close(false);
+
+            expect(emitter.emit).toHaveBeenCalledWith('close', { message: 'socket closed' });
         });
 
         it('fails to close a connection', () => {
