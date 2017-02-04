@@ -1,3 +1,4 @@
+var del = require('del');
 var gulp = require('gulp');
 var sass = require('gulp-sass');
 var errorReporter = require('./utils').errorReporter;

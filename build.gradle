@@ -48,4 +48,16 @@ test {
     }
 }
 
+task npmInstall(type: Exec) {
+    workingDir "$projectDir/client"
+    commandLine 'npm', 'install'
+}
+
+task npmBuild(type: Exec, dependsOn: npmInstall) {
+    workingDir "$projectDir/client"
+    commandLine "$projectDir/client/node_modules/gulp/bin/gulp.js", 'build'
+}
+
+assemble.dependsOn(npmBuild)
+
 defaultTasks 'clean', 'assemble', 'test'
