@@ -1,25 +1,31 @@
 import SocketHandler from '../../../js/utils/SocketHandler';
 import Emitter from '../../../js/utils/Emitter';
+import socketUtils from '../../../js/utils/socketUtils';
 
 describe('Socket Handler', () => {
-    let connectSpy, emitter;
+    let emitter;
 
-    beforeEach(() => {
-        connectSpy = jasmine.createSpy('connectSpy');
-        global.WebSocket = function(input) {
-            connectSpy(input);
+    const fakeConnect = (_, { onOpen, onClose, onError, onMessage }) => {
+        return {
+            onopen: onOpen,
+            onclose: onClose,
+            onerror: onError,
+            onmessage: onMessage,
+            close: jasmine.createSpy('socket.close'),
+            send: jasmine.createSpy('socket.send')
         };
-        global.WebSocket.prototype.close = jasmine.createSpy('closeSpy');
-        global.WebSocket.prototype.send = jasmine.createSpy('sendSpy');
-
-        emitter = new Emitter;
-        spyOn(emitter, 'emit');
-        spyOn(emitter, 'clearListeners');
-    });
+    };
 
     const instantiate = retry => {
         return new SocketHandler(emitter, retry);
     };
+
+    beforeEach(() => {
+        emitter = new Emitter;
+        spyOn(emitter, 'emit');
+        spyOn(emitter, 'clearListeners');
+        spyOn(socketUtils, 'connectSocket').and.callFake(fakeConnect);
+    });
 
     describe('#connect', () => {
         it('connects the socket', () => {
@@ -27,7 +33,7 @@ describe('Socket Handler', () => {
             spyOn(socketHandler, 'close');
 
             socketHandler.connect('some url');
-            expect(connectSpy).toHaveBeenCalledWith('some url');
+            expect(socketUtils.connectSocket).toHaveBeenCalledWith('some url', jasmine.any(Object));
             expect(socketHandler.close).toHaveBeenCalled();
         });
 
@@ -81,53 +87,42 @@ describe('Socket Handler', () => {
             const socketHandler = instantiate();
 
             socketHandler.connect('some url');
-            expect(connectSpy).toHaveBeenCalledWith('some url');
+            expect(socketUtils.connectSocket).toHaveBeenCalledWith('some url', jasmine.any(Object));
 
             socketHandler.connect();
-            expect(connectSpy).not.toHaveBeenCalledWith(undefined);
+            expect(socketUtils.connectSocket).not.toHaveBeenCalledWith(undefined, jasmine.any(Object));
         });
     });
 
     describe('#close', () => {
-        it('clears listeners', () => {
-            const socketHandler = instantiate();
-
-            socketHandler.close();
-
-            expect(emitter.emit).not.toHaveBeenCalled();
-            expect(emitter.clearListeners).toHaveBeenCalled();
-        });
-
         it('closes the socket', () => {
             const socketHandler = instantiate();
 
-            socketHandler._socket = new WebSocket('some url');
+            socketHandler._socket = fakeConnect('some url', {});
             socketHandler.close();
 
             expect(socketHandler._socket.onclose).toEqual(null);
             expect(socketHandler._socket.onerror).toEqual(null);
             expect(socketHandler._socket.close).toHaveBeenCalled();
             expect(emitter.emit).toHaveBeenCalledWith('close', { message: 'socket closed' });
-            expect(emitter.clearListeners).toHaveBeenCalled();
         });
 
         it('fails to close a connection', () => {
             const socketHandler = instantiate();
 
-            socketHandler._socket = new WebSocket('some url');
+            socketHandler._socket = fakeConnect('some url', {});
             socketHandler._socket.close = jasmine.createSpy().and.throwError('Sad for You');
 
             socketHandler.close();
 
             expect(emitter.emit).toHaveBeenCalledWith('error', new Error('Sad for You'));
-            expect(emitter.clearListeners).toHaveBeenCalled();
         });
     });
 
     describe('#send', () => {
         it('sends data', () => {
             const socketHandler = instantiate();
-            socketHandler._socket = new WebSocket('some url');
+            socketHandler._socket = fakeConnect('some url', {});
 
             socketHandler.send('data');
 
@@ -135,9 +130,9 @@ describe('Socket Handler', () => {
             expect(emitter.emit).toHaveBeenCalledWith('sending', 'data');
         });
 
-        it('emits and error when it cannot send', () => {
+        it('emits an error when it cannot send', () => {
             const socketHandler = instantiate();
-            socketHandler._socket = new WebSocket('some url');
+            socketHandler._socket = fakeConnect('some url', {});
             socketHandler._socket.send.and.throwError('Socket blocket');
 
             socketHandler.send('data');

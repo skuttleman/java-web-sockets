@@ -1,5 +1,8 @@
+import socketUtils from './socketUtils'
+import { RETRY_TIMEOUT } from '../constants/config';
+
 export default class SocketHandler {
-    constructor(emitter, retry = 250) {
+    constructor(emitter, retry = RETRY_TIMEOUT) {
         this._socket = null;
         this._emitter = emitter;
         this._retryConnect = retry;
@@ -8,11 +11,12 @@ export default class SocketHandler {
     connect(url = this._url) {
         this._url = url;
         this.close();
-        this._socket = new WebSocket(url);
-        this._socket.onopen = this._withoutReconnect.bind(this, 'open');
-        this._socket.onclose = this._withReconnect.bind(this, 'close');
-        this._socket.onerror = this._withReconnect.bind(this, 'error');
-        this._socket.onmessage = this._onMessage.bind(this);
+        this._socket = socketUtils.connectSocket(url, {
+            onMessage: event => this._onMessage(event),
+            onOpen: event => this._emitAndClear('open', event),
+            onClose: event => this._emitAndReconnect('close', event),
+            onError: event => this._emitAndReconnect('error', event)
+        });
     }
 
     close() {
@@ -26,7 +30,6 @@ export default class SocketHandler {
                 this._emitter.emit('error', error);
             }
         }
-        this._emitter.clearListeners();
     }
 
     send(data) {
@@ -46,12 +49,12 @@ export default class SocketHandler {
         }, this._retryConnect);
     }
 
-    _withReconnect(event, data) {
-        this._withoutReconnect(event, data);
+    _emitAndReconnect(event, data) {
+        this._emitter.emit(event, data);
         this._reconnect();
     }
 
-    _withoutReconnect(event, data) {
+    _emitAndClear(event, data) {
         this._emitter.emit(event, data);
     }
 

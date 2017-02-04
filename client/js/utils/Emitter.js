@@ -4,7 +4,6 @@ export default class Emitter {
     }
 
     emit(event, payload) {
-        console.debug('emitter:', event, payload);
         let callbacks = this._listeners[event] || [];
         callbacks.forEach(callback => callback(payload));
     }

@@ -1,12 +1,14 @@
-const getProtocol = () => {
-    return window.location.protocol;
+import { SOCKET_URL } from '../constants/config';
+
+const getSocketProtocol = () => {
+    return window.location.protocol === 'https:' ? 'wss:' : 'ws:';
 };
 
 const getSocketUrl = () => {
-    return 'localhost:8080/socket';
+    return SOCKET_URL;
 };
 
 export default {
-    getProtocol,
+    getSocketProtocol,
     getSocketUrl
 };

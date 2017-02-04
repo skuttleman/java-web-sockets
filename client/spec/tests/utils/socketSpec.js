@@ -9,7 +9,8 @@ describe('socket', () => {
         spyOn(SocketHandler.prototype, 'send');
         spyOn(SocketHandler.prototype, 'close');
         spyOn(Emitter.prototype, 'addListener');
-        spyOn(windowHelper, 'getProtocol').and.returnValue('http:');
+        spyOn(Emitter.prototype, 'clearListeners');
+        spyOn(windowHelper, 'getSocketProtocol').and.returnValue('ws:');
     });
 
     describe('#connect', () => {
@@ -29,7 +30,7 @@ describe('socket', () => {
             expect(SocketHandler.prototype.connect).not.toHaveBeenCalledWith('ws://localhost:8080/socket?id=undefined');
         });
         it('connects with ssl', () => {
-            windowHelper.getProtocol.and.returnValue('https:');
+            windowHelper.getSocketProtocol.and.returnValue('wss:');
             spyOn(windowHelper, 'getSocketUrl').and.returnValue('www.securesite.com/some/path');
             socket.connect('secret');
 
@@ -58,11 +59,21 @@ describe('socket', () => {
         });
     });
 
+    describe('#clearListeners', () => {
+        it('clears all listeners and chains', () => {
+            const result = socket.clearListeners();
+
+            expect(Emitter.prototype.clearListeners).toHaveBeenCalled();
+            expect(result).toEqual(socket);
+        });
+    });
+
     describe('#close', () => {
-        it('closes the socket', () => {
-            socket.close();
+        it('closes the socket and chains', () => {
+            const result = socket.close();
 
             expect(SocketHandler.prototype.close).toHaveBeenCalled();
+            expect(result).toEqual(socket);
         });
     });
 });

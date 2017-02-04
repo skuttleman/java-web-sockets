@@ -51,6 +51,8 @@ public class SocketService {
     }
 
     private void handleMessage(StringSocketMessage message, WebSocketSession session) {
+        Map<String, String> payload = simpleMap("message", message.getPayload());
+        handleMessage(new MapSocketMessage(message.getType(), payload), session);
     }
 
     private void handleMessage(MapSocketMessage message, WebSocketSession session) {
@@ -68,6 +70,9 @@ public class SocketService {
     }
 
     private void handleMessage(ListSocketMessage message, WebSocketSession session) {
+        String type = message.getType();
+        message.getPayload()
+            .forEach(string -> handleMessage(new StringSocketMessage(type, string), session));
     }
 
     private void handleUnknownMessage(WebSocketSession session) {

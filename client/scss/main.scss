@@ -1,15 +1,150 @@
-.connection {
-    cursor: pointer;
-    &.connection--selected {
-        background-color: lightblue;
-        font-style: italic;
-    }
+* {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 li {
     list-style: none;
 }
 
-* {
-    font-family: sans-serif;
+#app {
+    padding: 16px;
+}
+
+.pageTitle {
+    color: darkblue;
+}
+
+.indicator {
+    margin: 8px 0;
+    & > * {
+        font-style: italic;
+    }
+}
+
+.indicator--connected {
+    & > *::after {
+        color: blue;
+        content: ' \2714';
+    }
+}
+
+.indicator--disconnected {
+    color: gray;
+    & > *::after {
+        color: red;
+        content: ' \2716';
+    }
+}
+
+.connections{
+    padding: 16px 0;
+    .connectionList {
+        margin: 0 16px;
+        padding: 8px;
+        border: 2px solid green;
+        border-radius: 4px;
+        width: 400px;
+        &:empty {
+            padding: 0;
+            border: none;
+        }
+        .connection:not(:last-child) {
+            margin-bottom: 8px;
+        }
+    }
+}
+
+.connection {
+    cursor: pointer;
+    &:hover {
+        color: darkblue;
+        font-weight: bold;
+    }
+    &.connection--selected {
+        background-color: lightskyblue;
+        font-style: italic;
+    }
+}
+
+*[type="submit"], button {
+    outline: none;
+    border: 1px solid lightgray;
+    padding: 4px 16px;
+    color: white;
+    border-radius: 4px;
+    transition: box-shadow 0.2s linear;
+    font-size: 1rem;
+    margin: 8px 0;
+    &:disabled {
+        background-color: gray;
+    }
+    &:active, &:focus {
+        box-shadow: none;
+    }
+    &:not(:disabled) {
+        cursor: pointer;
+        &:hover {
+            box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
+        }
+    }
+}
+
+.dialog {
+    label {
+        font-weight: bold;
+    }
+    input[type="text"] {
+        display: block;
+        width: 100%;
+        font-size: 1rem;
+        margin: 4px 0;
+        outline: none;
+        border: 2px solid lightgray;
+        border-radius: 4px;
+        padding: 4px;
+        transition: box-shadow 0.2s linear;
+        &:focus {
+            border: 2px solid lightblue;
+            box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.2);
+        }
+    }
+    *[type="submit"]:not(:disabled) {
+        background-color: #090;
+        &:active, &:focus {
+            background-color: #0c0;
+        }
+    }
+}
+
+.dialog-disconnect {
+    *[type="submit"] {
+        background-color: #00f;
+        &:active, &:focus {
+            background-color: #33f;
+        }
+    }
+}
+
+.messages {
+    .messageList {
+        margin: 0 16px;
+        padding: 8px;
+        border: 1px solid lightgray;
+        border-radius: 4px;
+        &:empty {
+            padding: 0;
+            border: none;
+        }
+        .message:not(:last-child) {
+            margin-bottom: 8px;
+        }
+    }
+    .clear:not(:disabled) {
+        background-color: #00f;
+        &:active, &:focus {
+            background-color: #33f;
+        }
+    }
 }

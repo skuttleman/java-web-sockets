@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import socketInit from '../utils/socketInit';
 import BroadcastDialog from './BroadcastDialog';
 import Connections from './Connections';
+import ConnectionIndicator from './ConnectionIndicator';
 import Messages from './Messages';
 
 export class ManagerApp extends Component {
@@ -18,7 +19,11 @@ export class ManagerApp extends Component {
         } = this.props;
         return (
             <div>
-                <h1>Socket Manager App</h1>
+                <h1 className="pageTitle">Socket Manager App</h1>
+                <ConnectionIndicator
+                    connected={socketConnected}
+                    channelId="manager"
+                    />
                 <Connections
                     connections={socketList}
                     selectedConnection={selectedConnection}

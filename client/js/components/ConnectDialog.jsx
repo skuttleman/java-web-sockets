@@ -1,29 +1,27 @@
 import React, { Component } from 'react';
 import socketInit from '../utils/socketInit';
 import socket from '../utils/socket';
+import { SET_CHANNEL_ID, SOCKET_CLEAR_MESSAGES } from '../constants/actionTypes';
 
 export default class ConnectDialog extends Component {
-    onConnect(event) {
-        event.preventDefault();
-        const { dispatch, channelId: id } = this.props;
-        socketInit({ id, dispatch });
+    render() {
+        if (!this.props.socketConnected) {
+            return this.renderConnectedForm();
+        }
+        return this.renderDisconnectForm();
     }
 
-    onChange(event) {
-        this.props.dispatch({ type: 'SET_CHANNEL_ID', value: event.target.value })
-    }
-
-    onDisconnect(event) {
-        event.preventDefault();
-        this.props.dispatch({ type: 'SOCKET_CLEAR_MESSAGES' });
-        socket.close();
-    }
-
-    renderConnectForm() {
+    renderConnectedForm() {
         return (
-            <form className="connectDialog" onSubmit={event => this.onConnect(event)}>
-                <label htmlFor="message">ChannelId:</label>
-                <input id="message" value={this.props.channelId} onChange={event => this.onChange(event)}/>
+            <form className="dialog dialog-connect" onSubmit={event => this.connect(event)}>
+                <label htmlFor="channelId">ChannelId:</label>
+                <input
+                    id="channelId"
+                    type="text"
+                    value={this.props.channelId}
+                    autoComplete="off"
+                    onChange={event => this.change(event)}
+                    />
                 <button type="submit" disabled={!this.props.channelId}>Connect</button>
             </form>
         );
@@ -31,16 +29,25 @@ export default class ConnectDialog extends Component {
 
     renderDisconnectForm() {
         return (
-            <form className="connectDialog" onSubmit={event => this.onDisconnect(event)}>
+            <form className="dialog dialog-disconnect" onSubmit={event => this.disconnect(event)}>
                 <button type="submit">Disconnect</button>
             </form>
         );
     }
 
-    render() {
-        if (!this.props.socketConnected) {
-            return this.renderConnectForm();
-        }
-        return this.renderDisconnectForm();
+    connect(event) {
+        event.preventDefault();
+        const { dispatch, channelId } = this.props;
+        socketInit({ id: channelId, dispatch });
+    }
+
+    change(event) {
+        this.props.dispatch({ type: SET_CHANNEL_ID, value: event.target.value })
+    }
+
+    disconnect(event) {
+        event.preventDefault();
+        this.props.dispatch({ type: SOCKET_CLEAR_MESSAGES });
+        socket.close().clearListeners();
     }
 }

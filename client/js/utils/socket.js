@@ -10,7 +10,7 @@ export default {
     connect(id = USER.channelId) {
         USER.channelId = id;
         const socketUrl = windowHelper.getSocketUrl();
-        const protocol = windowHelper.getProtocol() === 'https:' ? 'wss:' : 'ws:';
+        const protocol = windowHelper.getSocketProtocol();
         socketHandler.connect(`${protocol}//${socketUrl}?id=${id}`);
         return this;
     },
@@ -22,7 +22,12 @@ export default {
         socketHandler.send({ type, payload });
         return this;
     },
+    clearListeners() {
+        emitter.clearListeners();
+        return this;
+    },
     close() {
         socketHandler.close();
+        return this;
     }
 };

@@ -32,9 +32,9 @@ public class SocketSender {
     public boolean send(WebSocketSession session, TextMessage message, String channelId) {
         try {
             if (channelId == null) {
-                logger.info("sending message to: " + session.toString() + " with payload: '" + message.getPayload() + "'");
+                logger.info("sending message to: {} with payload: '{}'", session, message.getPayload());
             } else {
-                logger.info("sending message to: " + session.toString() + " with channelId: '" + channelId + "' and payload: '" + message.getPayload() + "'");
+                logger.info("sending message to: {} with channelId '{}' and  payload: '{}'", session, channelId, message.getPayload());
             }
             session.sendMessage(message);
             return true;
