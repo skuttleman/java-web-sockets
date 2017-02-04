@@ -1,6 +1,13 @@
 import socket from '../../../js/utils/socket';
 import Emitter from '../../../js/utils/Emitter';
 import socketInit from '../../../js/utils/socketInit';
+import {
+    CLIENT_SOCKET_CONNECTED,
+    CLIENT_SOCKET_DISCONNECTED,
+    SOCKET_CONNECTION_CLOSED,
+    SOCKET_CONNECTION_ESTABLISHED,
+    SOCKET_RECEIVE_MESSAGE
+} from '../../../js/constants/actionTypes';
 
 describe('socketInit', () => {
     let emitter;
@@ -43,13 +50,13 @@ describe('socketInit', () => {
         it('dispatches an action on open', () => {
             emitter.emit('open');
 
-            expect(dispatch).toHaveBeenCalledWith({ type: 'SOCKET_CONNECTION_ESTABLISHED' });
+            expect(dispatch).toHaveBeenCalledWith({ type: SOCKET_CONNECTION_ESTABLISHED });
         });
 
         it('dispatches an action on close', () => {
             emitter.emit('close');
 
-            expect(dispatch).toHaveBeenCalledWith({ type: 'SOCKET_CONNECTION_CLOSED' });
+            expect(dispatch).toHaveBeenCalledWith({ type: SOCKET_CONNECTION_CLOSED });
         });
 
         it('logs errors', () => {
@@ -74,7 +81,7 @@ describe('socketInit', () => {
                 emitter.emit('message', event);
 
                 expect(dispatch).toHaveBeenCalledWith({
-                    type: 'CLIENT_SOCKET_CONNECTED',
+                    type: CLIENT_SOCKET_CONNECTED,
                     id: 999
                 });
             });
@@ -87,7 +94,7 @@ describe('socketInit', () => {
                 emitter.emit('message', event);
 
                 expect(dispatch).toHaveBeenCalledWith({
-                    type: 'CLIENT_SOCKET_DISCONNECTED',
+                    type: CLIENT_SOCKET_DISCONNECTED,
                     id: 999
                 });
             });
@@ -103,7 +110,7 @@ describe('socketInit', () => {
                 emitter.emit('message', event);
 
                 expect(dispatch).toHaveBeenCalledWith({
-                    type: 'SOCKET_RECEIVE_MESSAGE',
+                    type: SOCKET_RECEIVE_MESSAGE,
                     the: 'wheels on the bus',
                     go: 'round and round'
                 });

@@ -56,6 +56,10 @@ task npmBuild(type: Exec, dependsOn: npmInstall) {
     commandLine 'npm', 'run', 'build'
 }
 
+task npmTest(type: Exec) {
+    commandLine 'npm', 'test'
+}
+
 jar {
   from('src/main/resources/static') {
      include '*.*'
@@ -64,5 +68,6 @@ jar {
 }
 
 jar.dependsOn(npmBuild)
+test.dependsOn(npmTest)
 
 defaultTasks 'clean', 'assemble', 'test'

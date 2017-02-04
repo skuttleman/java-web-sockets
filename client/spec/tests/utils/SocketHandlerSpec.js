@@ -30,9 +30,10 @@ describe('Socket Handler', () => {
     describe('#connect', () => {
         it('connects the socket', () => {
             const socketHandler = instantiate();
-            spyOn(socketHandler, 'close');
+            spyOn(socketHandler, 'close')
 
             socketHandler.connect('some url');
+
             expect(socketUtils.connectSocket).toHaveBeenCalledWith('some url', jasmine.any(Object));
             expect(socketHandler.close).toHaveBeenCalled();
         });
@@ -104,7 +105,6 @@ describe('Socket Handler', () => {
             expect(socketHandler._socket.onclose).toEqual(null);
             expect(socketHandler._socket.onerror).toEqual(null);
             expect(socketHandler._socket.close).toHaveBeenCalled();
-            expect(emitter.emit).toHaveBeenCalledWith('close', { message: 'socket closed' });
         });
 
         it('fails to close a connection', () => {

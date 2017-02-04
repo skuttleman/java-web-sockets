@@ -13,7 +13,7 @@ export default class SocketHandler {
         this.close();
         this._socket = socketUtils.connectSocket(url, {
             onMessage: event => this._onMessage(event),
-            onOpen: event => this._emitAndClear('open', event),
+            onOpen: event => this._emit('open', event),
             onClose: event => this._emitAndReconnect('close', event),
             onError: event => this._emitAndReconnect('error', event)
         });
@@ -25,7 +25,6 @@ export default class SocketHandler {
             this._socket.onerror = null;
             try {
                 this._socket.close();
-                this._emitter.emit('close', { message: 'socket closed' });
             } catch (error) {
                 this._emitter.emit('error', error);
             }
@@ -50,11 +49,11 @@ export default class SocketHandler {
     }
 
     _emitAndReconnect(event, data) {
-        this._emitter.emit(event, data);
+        this._emit(event, data);
         this._reconnect();
     }
 
-    _emitAndClear(event, data) {
+    _emit(event, data) {
         this._emitter.emit(event, data);
     }
 
