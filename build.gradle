@@ -49,15 +49,20 @@ test {
 }
 
 task npmInstall(type: Exec) {
-    workingDir "$projectDir/client"
     commandLine 'npm', 'install'
 }
 
 task npmBuild(type: Exec, dependsOn: npmInstall) {
-    workingDir "$projectDir/client"
-    commandLine "$projectDir/client/node_modules/gulp/bin/gulp.js", 'build'
+    commandLine 'npm', 'run', 'build'
 }
 
-assemble.dependsOn(npmBuild)
+jar {
+  from('src/main/resources/static') {
+     include '*.*'
+  }
+
+}
+
+jar.dependsOn(npmBuild)
 
 defaultTasks 'clean', 'assemble', 'test'

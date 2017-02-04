@@ -11,13 +11,14 @@ describe('socket', () => {
         spyOn(Emitter.prototype, 'addListener');
         spyOn(Emitter.prototype, 'clearListeners');
         spyOn(windowHelper, 'getSocketProtocol').and.returnValue('ws:');
+        spyOn(windowHelper, 'getSocketUrl').and.returnValue('somehost.com/socket');
     });
 
     describe('#connect', () => {
         it('connects and chains', () => {
             const result = socket.connect(123);
 
-            expect(SocketHandler.prototype.connect).toHaveBeenCalledWith('ws://localhost:8080/socket?id=123');
+            expect(SocketHandler.prototype.connect).toHaveBeenCalledWith('ws://somehost.com/socket?id=123');
             expect(result).toEqual(socket);
         });
 
@@ -26,12 +27,13 @@ describe('socket', () => {
             socket.connect();
 
             expect(SocketHandler.prototype.connect).toHaveBeenCalledTimes(2);
-            expect(SocketHandler.prototype.connect).toHaveBeenCalledWith('ws://localhost:8080/socket?id=123');
-            expect(SocketHandler.prototype.connect).not.toHaveBeenCalledWith('ws://localhost:8080/socket?id=undefined');
+            expect(SocketHandler.prototype.connect).toHaveBeenCalledWith('ws://somehost.com/socket?id=123');
+            expect(SocketHandler.prototype.connect).not.toHaveBeenCalledWith('ws://somehost.com/socket?id=undefined');
         });
+
         it('connects with ssl', () => {
             windowHelper.getSocketProtocol.and.returnValue('wss:');
-            spyOn(windowHelper, 'getSocketUrl').and.returnValue('www.securesite.com/some/path');
+            windowHelper.getSocketUrl.and.returnValue('www.securesite.com/some/path');
             socket.connect('secret');
 
             expect(SocketHandler.prototype.connect).toHaveBeenCalledWith('wss://www.securesite.com/some/path?id=secret');

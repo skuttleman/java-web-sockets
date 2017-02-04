@@ -24,21 +24,21 @@ function browserifyConfig(entry) {
 
 function jsBuild(exit, fileName) {
     return function() {
-        return browserify(browserifyConfig('./js/' + fileName))
+        return browserify(browserifyConfig('./client/js/' + fileName))
             .transform(babelify.configure(babelifyConfig))
             .bundle()
             .on('error', errorReporter(exit))
             .pipe(source(fileName))
-            .pipe(gulp.dest('../src/main/resources/static'));
+            .pipe(gulp.dest('src/main/resources/static'));
     };
 }
 
 gulp.task('clean:js:client', function() {
-    return del('../src/main/resources/static/client.js', { force: true });
+    return del('src/main/resources/static/client.js');
 });
 
 gulp.task('clean:js:manager', function() {
-    return del('../src/main/resources/static/manager.js', { force: true });
+    return del('src/main/resources/static/manager.js');
 });
 
 gulp.task('build:js:client', ['clean:js:client'], jsBuild(true, 'client.js'));
@@ -54,5 +54,5 @@ gulp.task('build:js', ['build:js:client', 'build:js:manager']);
 gulp.task('build:js:keepAlive', ['build:js:keepAlive:client', 'build:js:keepAlive:manager']);
 
 gulp.task('build:watch:js', ['build:js:keepAlive'], function() {
-    return gulp.watch('js/**/*.js*', ['build:js:keepAlive']);
+    return gulp.watch('client/js/**/*.js*', ['build:js:keepAlive']);
 });
