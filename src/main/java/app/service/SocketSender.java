@@ -13,29 +13,29 @@ import java.io.IOException;
 public class SocketSender {
     private static final Logger logger = LoggerFactory.getLogger(SocketSender.class);
 
+    public boolean send(WebSocketSession session, Object message) {
+        return send(session, message, null);
+    }
+
     public boolean send(WebSocketSession session, Object message, String channelId) {
         return send(session, JsonUtils.stringify(message), channelId);
-    }
-
-    public boolean send(WebSocketSession session, Object message) {
-        return send(session, JsonUtils.stringify(message));
-    }
-
-    public boolean send(WebSocketSession session, String message, String channelId) {
-        return send(session, new TextMessage(message), channelId);
     }
 
     public boolean send(WebSocketSession session, String message) {
         return send(session, new TextMessage(message), null);
     }
 
+    public boolean send(WebSocketSession session, String message, String channelId) {
+        return send(session, new TextMessage(message), channelId);
+    }
+
     public boolean send(WebSocketSession session, TextMessage message, String channelId) {
+        if (channelId == null) {
+            logger.info("sending message to: {} with payload: '{}'", session, message.getPayload());
+        } else {
+            logger.info("sending message to: {} with channelId '{}' and  payload: '{}'", session, channelId, message.getPayload());
+        }
         try {
-            if (channelId == null) {
-                logger.info("sending message to: {} with payload: '{}'", session, message.getPayload());
-            } else {
-                logger.info("sending message to: {} with channelId '{}' and  payload: '{}'", session, channelId, message.getPayload());
-            }
             session.sendMessage(message);
             return true;
         } catch (Exception e) {

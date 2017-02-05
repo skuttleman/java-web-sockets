@@ -15,15 +15,13 @@ const handleMessage = (id, dispatch, { type, payload }) => {
 };
 
 const dispatchAction = (dispatch, type, payload) => {
-    switch (type) {
-        case 'connected':
-            return dispatch({ type: CLIENT_SOCKET_CONNECTED, id: payload.id });
-        case 'disconnected':
-            return dispatch({ type: CLIENT_SOCKET_DISCONNECTED, id: payload.id });
-        default:
-            dispatch({ type: SOCKET_RECEIVE_MESSAGE, ...payload });
+    if (type === 'connected') {
+        dispatch({ type: CLIENT_SOCKET_CONNECTED, id: payload.id });
+    } else if (type === 'disconnected') {
+        dispatch({ type: CLIENT_SOCKET_DISCONNECTED, id: payload.id });
+    } else {
+        dispatch({ type: SOCKET_RECEIVE_MESSAGE, ...payload });
     }
-
 };
 
 export default ({ id = '', dispatch }) => {

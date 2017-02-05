@@ -3,7 +3,6 @@ package app.service;
 import app.model.SocketMessage;
 import app.model.StringSocketMessage;
 import app.utils.JsonUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +18,9 @@ import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
@@ -46,7 +47,11 @@ public class SocketManagerTest {
     @Test
     public void subscribe_addsSession() throws Exception {
         manager.subscribe("channel-id", session1);
+        verify(factory).socketChannel(eq("channel-id"), any(SocketSender.class));
+
         manager.subscribe("channel-id", session2);
+        verifyNoMoreInteractions(factory);
+
         List<String> ids = manager.getChannelIds();
 
         verify(channel).addSession(session1);
@@ -59,7 +64,7 @@ public class SocketManagerTest {
         manager.subscribe("channel-id", session1);
         verify(factory).socketChannel("channel-id", sender);
         manager.subscribe(null, session1);
-        verifyNoMoreInteractions(factory);
+        verifyZeroInteractions(factory);
     }
 
     @Test
@@ -87,6 +92,15 @@ public class SocketManagerTest {
         manager.broadcast("channel-id", message);
 
         verify(channel).broadcast(new TextMessage(json));
+    }
+
+    @Test
+    public void broadcast_failsSilently() throws Exception {
+        try {
+            manager.broadcast("no-channel-id", "some-message");
+        } catch (NullPointerException e) {
+            fail("'broadcast' should not fail if channel id does not exist");
+        }
     }
 
     @Test

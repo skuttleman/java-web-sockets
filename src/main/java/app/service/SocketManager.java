@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static app.utils.FunctionalUtils.nullSafe;
 import static app.utils.FunctionalUtils.or;
 import static java.util.stream.Collectors.toList;
 
@@ -31,7 +32,9 @@ public class SocketManager {
         if (channelId == null) {
             return;
         }
-        SocketChannel channel = or(channels.get(channelId), factory.socketChannel(channelId, sender));
+        SocketChannel channel = or(
+            channels.get(channelId),
+            () -> factory.socketChannel(channelId, sender));
         channel.addSession(session);
         channels.put(channelId, channel);
     }
@@ -45,12 +48,12 @@ public class SocketManager {
         return cleaned;
     }
 
-    public void broadcast(String channelId, SocketMessage<?> message) {
-        broadcast(channelId, JsonUtils.stringify(message));
-    }
-
     public void broadcast(String channelId, String message) {
         broadcast(channelId, new TextMessage(message));
+    }
+
+    public void broadcast(String channelId, SocketMessage<?> message) {
+        broadcast(channelId, JsonUtils.stringify(message));
     }
 
     public List<String> getChannelIds() {
@@ -63,10 +66,7 @@ public class SocketManager {
         if (channelId == null) {
             broadcast(message);
         } else {
-            SocketChannel channel = channels.get(channelId);
-            if (channel != null) {
-                channel.broadcast(message);
-            }
+            nullSafe(() -> channels.get(channelId).broadcast(message));
         }
     }
 

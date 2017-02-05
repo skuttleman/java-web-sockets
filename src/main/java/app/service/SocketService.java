@@ -37,8 +37,7 @@ public class SocketService {
     }
 
     public void handleDisconnect(WebSocketSession session) {
-        socketManager.clean(session)
-            .forEach(this::notifyManagerDisconnect);
+        socketManager.clean(session).forEach(this::notifyManagerDisconnect);
     }
 
     public void subscribe(String channelId, WebSocketSession session) {

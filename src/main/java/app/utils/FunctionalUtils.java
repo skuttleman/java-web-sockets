@@ -13,7 +13,26 @@ public class FunctionalUtils {
             .orElse(null);
     }
 
+    public static <T> T or(T arg, Thunk<T> func) {
+        return arg != null ? arg : func.evaluate();
+    }
+
     public static <T> Predicate<T> complement(Predicate<T> predicate) {
         return input -> !predicate.test(input);
+    }
+
+    public static <T> T nullSafe(Thunk<T> func) {
+        try {
+            return func.evaluate();
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
+    public static void nullSafe(Runnable func) {
+        try {
+            func.run();
+        } catch (NullPointerException e) {
+        }
     }
 }

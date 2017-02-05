@@ -1,4 +1,3 @@
-
 const connectSocket = (url, { onMessage, onOpen, onClose, onError }) => {
     const socket = new WebSocket(url);
     socket.onmessage = onMessage;

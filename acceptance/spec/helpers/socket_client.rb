@@ -1,4 +1,4 @@
-class Server
+class SocketClient
     def initialize port
         @port = port
     end
@@ -6,34 +6,34 @@ class Server
     def start
         unless app_running?
             @pid = Process.spawn(
-                "SERVER_PORT=#{@port} java -jar build/libs/java-socket-0.1.0.jar",
-                chdir: '../',
+                "rackup -p #{@port} config.ru",
+                chdir: './',
                 pgroup: true,
-                out: 'server.std.log',
-                err: 'server.err.log'
+                out: 'socket.std.log',
+                err: 'socket.err.log'
             )
 
-            puts 'Starting Server'
+            puts 'Starting Socket Client'
 
-            retry_for 100 do
-                raise 'Server never started' unless app_running?
+            retry_for 20 do
+                raise 'Socket Client never started' unless app_running?
             end
         end
 
-        puts 'Server Started'
+        puts 'Socket Client Started'
     end
 
     def app_running?
         begin
             HTTParty.get("http://localhost:#{@port}/health").code == 200
-        rescue Exception => e
+        rescue
             false
         end
     end
 
     def stop
         if @pid
-            puts 'Stopping Server'
+            puts 'Stopping Socket Client'
             Process.kill('TERM', @pid)
         end
     end

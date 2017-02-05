@@ -31,7 +31,7 @@ describe('socket', () => {
             expect(SocketHandler.prototype.connect).not.toHaveBeenCalledWith('ws://somehost.com/socket?id=undefined');
         });
 
-        it('connects with ssl', () => {
+        it('connects with SSL', () => {
             windowHelper.getSocketProtocol.and.returnValue('wss:');
             windowHelper.getSocketUrl.and.returnValue('www.securesite.com/some/path');
             socket.connect('secret');
