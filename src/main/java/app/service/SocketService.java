@@ -37,16 +37,12 @@ public class SocketService {
     }
 
     public void handleDisconnect(WebSocketSession session) {
-        socketManager.clean(session).forEach(this::notifyManagerDisconnect);
+        socketManager.clean(session).forEach(this::notifyDisconnect);
     }
 
     public void subscribe(String channelId, WebSocketSession session) {
         socketManager.subscribe(channelId, session);
-        if (channelId.equals("manager")) {
-            socketManager.getChannelIds().forEach(this::notifyManagerConnect);
-        } else {
-            notifyManagerConnect(channelId);
-        }
+        socketManager.getChannelIds().forEach(this::notifyConnect);
     }
 
     private void handleMessage(StringSocketMessage message, WebSocketSession session) {
@@ -78,16 +74,16 @@ public class SocketService {
         sender.send(session, new StringSocketMessage("error", "Unknown Message Type"));
     }
 
-    private void notifyManagerConnect(String channelId) {
-        notifyManager("connected", simpleMap("id", channelId));
+    private void notifyConnect(String channelId) {
+        notifyAll("connected", simpleMap("id", channelId));
     }
 
-    private void notifyManagerDisconnect(String channelId) {
-        notifyManager("disconnected", simpleMap("id", channelId));
+    private void notifyDisconnect(String channelId) {
+        notifyAll("disconnected", simpleMap("id", channelId));
     }
 
-    private void notifyManager(String event, Map<String, String> payload) {
-        notify("manager", event, payload);
+    private void notifyAll(String event, Map<String, String> payload) {
+        notify(null, event, payload);
     }
 
     private void notify(String channelId, String event, Map<String, String> payload) {

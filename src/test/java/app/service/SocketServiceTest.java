@@ -69,33 +69,21 @@ public class SocketServiceTest {
         service.handleDisconnect(session);
 
         verify(manager).clean(session);
-        verify(manager).broadcast("manager", new MapSocketMessage("disconnected", payload1));
-        verify(manager).broadcast("manager", new MapSocketMessage("disconnected", payload2));
+        verify(manager).broadcast(null, new MapSocketMessage("disconnected", payload1));
+        verify(manager).broadcast(null, new MapSocketMessage("disconnected", payload2));
     }
 
     @Test
-    public void subscribe_notifiesNewManager() throws Exception {
+    public void subscribe_notifiesConnected() throws Exception {
         List<String> ids = asList("id1", "id2");
         when(manager.getChannelIds()).thenReturn(ids);
         Map<String, String> payload1 = simpleMap("id", "id1");
         Map<String, String> payload2 = simpleMap("id", "id2");
 
-        service.subscribe("manager", session);
+        service.subscribe("some-client", session);
 
-        verify(manager).subscribe("manager", session);
-        verify(manager).broadcast("manager", new MapSocketMessage("connected", payload1));
-        verify(manager).broadcast("manager", new MapSocketMessage("connected", payload2));
-    }
-
-    @Test
-    public void subscribe_updatesManager() throws Exception {
-        List<String> ids = asList("id1", "id2");
-        when(manager.getChannelIds()).thenReturn(ids);
-        Map<String, String> payload = simpleMap("id", "non-manager");
-
-        service.subscribe("non-manager", session);
-
-        verify(manager).subscribe("non-manager", session);
-        verify(manager).broadcast("manager", new MapSocketMessage("connected", payload));
+        verify(manager).subscribe("some-client", session);
+        verify(manager).broadcast(null, new MapSocketMessage("connected", payload1));
+        verify(manager).broadcast(null, new MapSocketMessage("connected", payload2));
     }
 }
